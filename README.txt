@@ -34,3 +34,5 @@
 pip install psutil
 pip install pywin32
 pip install requests
+官网:liangdun.top
+最新安装包下载直链:https://pan.tenire.com/down.php/30ecf27e56ae75bde86fd2fbadd38001.exe
