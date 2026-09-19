@@ -1,0 +1,63 @@
+# ── Python ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+venv/
+.venv/
+env/
+
+# ── PyInstaller / Nuitka ──────────────────────────────────
+Output/
+*.manifest
+
+# ── 运行数据 ──────────────────────────────────────────────
+# 程序运行时会把日志、隔离区、配置写到
+# %LOCALAPPDATA%\LiangDunSecurity\，不应提交到仓库。
+logs/
+conf/
+quarantine/
+quarantine_sandbox/
+settings.json
+config.json
+scan_logs.json
+*.db
+*.sqlite3
+
+# ── ClamAV 引擎 ───────────────────────────────────────────
+# 体积过大且以 GPL v2 授权，请从 https://www.clamav.net/downloads 获取。
+# 这里只忽略二进制与病毒库，保留说明文档。
+clamav/*.exe
+clamav/*.dll
+clamav/db/
+clamav/tmp/
+**/clamav/*.exe
+**/clamav/*.dll
+**/clamav/db/
+**/clamav/tmp/
+
+# ── 编译产物 ──────────────────────────────────────────────
+*.exe
+*.dll
+*.pyd
+
+# ── 证书与密钥（严禁提交）─────────────────────────────────
+*.pfx
+*.p12
+*.key
+*.pem
+*.sig
+secret.key
+safe_cache.pkl
+
+# ── 编辑器 / 操作系统 ─────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

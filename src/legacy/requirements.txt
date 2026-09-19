@@ -1,0 +1,16 @@
+# 量盾历史版本（v1 / v4 / v4_plus）运行依赖
+#
+# 这些版本使用 CustomTkinter 构建界面，与 5.4 之后的原生 tkinter 版本
+# 依赖不同，因此单独列出。
+#
+# 注意：注册表与启动项操作使用 Python 标准库 winreg，
+# 不需要额外安装 pywin32。
+
+customtkinter>=5.2.0
+psutil>=5.9
+pystray>=0.19
+Pillow>=10.0
+requests>=2.31
+
+# 打包为 EXE 时需要
+# pyinstaller>=6.0
