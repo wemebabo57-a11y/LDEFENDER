@@ -1,0 +1,497 @@
+{
+  "version": "1.0.0",
+  "description": "iMonitor HIPS 内置安全规则库",
+  "rule_groups": [
+    {
+      "name": "勒索软件防护",
+      "description": "检测并阻止勒索软件常见行为",
+      "rules": [
+        {
+          "id": "ransomware_001",
+          "name": "阻止勒索软件文件加密行为",
+          "event": "FileWrite",
+          "action": 8,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*.encrypted"]},
+              {"match": ["CurrentProcessPath", "*"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        },
+        {
+          "id": "ransomware_002",
+          "name": "阻止删除卷影副本",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*vssadmin*delete*shadows*"]}
+            ]
+          }
+        },
+        {
+          "id": "ransomware_003",
+          "name": "阻止 wbadmin 删除备份",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*wbadmin*delete*catalog*"]}
+            ]
+          }
+        },
+        {
+          "id": "ransomware_004",
+          "name": "阻止 bcdedit 禁用恢复",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*bcdedit*recoveryenabled*no*"]}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "系统关键位置保护",
+      "description": "保护系统关键文件和注册表不被恶意修改",
+      "rules": [
+        {
+          "id": "sysprotect_001",
+          "name": "保护系统启动项注册表",
+          "event": "RegistrySetValue",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["RegistryPath", "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run*"]}
+            ]
+          }
+        },
+        {
+          "id": "sysprotect_002",
+          "name": "保护系统服务注册表",
+          "event": "RegistryCreate",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["RegistryPath", "HKLM\\SYSTEM\\CurrentControlSet\\Services*"]}
+            ]
+          }
+        },
+        {
+          "id": "sysprotect_003",
+          "name": "阻止修改系统 hosts 文件",
+          "event": "FileWrite",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\System32\\drivers\\etc\\hosts*"]}
+            ]
+          }
+        },
+        {
+          "id": "sysprotect_004",
+          "name": "阻止修改系统 DLL",
+          "event": "FileWrite",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\System32\\*.dll"]}
+            ]
+          }
+        },
+        {
+          "id": "sysprotect_005",
+          "name": "阻止修改 Windows 目录可执行文件",
+          "event": "FileWrite",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\Windows\\*.exe"]}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "进程注入防护",
+      "description": "检测并阻止常见的进程注入技术",
+      "rules": [
+        {
+          "id": "injection_001",
+          "name": "检测远程线程注入",
+          "event": "ThreadCreate",
+          "action": 3,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CurrentProcessPath", "*"]},
+              {"match": ["ThreadProcessId", "*"]}
+            ]
+          }
+        },
+        {
+          "id": "injection_002",
+          "name": "检测可疑 DLL 注入",
+          "event": "ImageLoad",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\temp\\*.dll"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        },
+        {
+          "id": "injection_003",
+          "name": "检测 AppData 目录 DLL 加载",
+          "event": "ImageLoad",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\AppData\\*.dll"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        },
+        {
+          "id": "injection_004",
+          "name": "检测 API Hook",
+          "event": "HookCreate",
+          "action": 3,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CurrentProcessPath", "*"]}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "恶意软件行为检测",
+      "description": "检测常见恶意软件行为模式",
+      "rules": [
+        {
+          "id": "malware_001",
+          "name": "阻止 PowerShell 下载执行",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*powershell*-ep*bypass*"]}
+            ]
+          }
+        },
+        {
+          "id": "malware_002",
+          "name": "阻止 PowerShell 编码命令",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*powershell*-enc*"]}
+            ]
+          }
+        },
+        {
+          "id": "malware_003",
+          "name": "阻止 cmd 执行远程脚本",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*cmd*/c*powershell*"]}
+            ]
+          }
+        },
+        {
+          "id": "malware_004",
+          "name": "阻止 certutil 下载文件",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*certutil*-urlcache*-split*f*http*"]}
+            ]
+          }
+        },
+        {
+          "id": "malware_005",
+          "name": "阻止 mshta 执行远程脚本",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*mshta*http*"]}
+            ]
+          }
+        },
+        {
+          "id": "malware_006",
+          "name": "阻止 rundll32 执行可疑命令",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*rundll32*javascript*"]}
+            ]
+          }
+        },
+        {
+          "id": "malware_007",
+          "name": "阻止 regsvr32 执行远程脚本",
+          "event": "ProcessCreate",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*regsvr32*/i:/s*scrobj.dll*"]}
+            ]
+          }
+        },
+        {
+          "id": "malware_008",
+          "name": "阻止 cscript/wscript 执行脚本",
+          "event": "ProcessCreate",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*cscript*.vbs*"]}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "网络防护",
+      "description": "监控和阻止可疑网络活动",
+      "rules": [
+        {
+          "id": "network_001",
+          "name": "监控异常端口连接",
+          "event": "SocketConnect",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["RemotePort", "4444"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        },
+        {
+          "id": "network_002",
+          "name": "监控常见 C2 端口",
+          "event": "SocketConnect",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["RemotePort", "5555"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        },
+        {
+          "id": "network_003",
+          "name": "阻止访问可疑 URL 模式",
+          "event": "HTTPRequest",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["URL", "*.onion*"]}
+            ]
+          }
+        },
+        {
+          "id": "network_004",
+          "name": "阻止访问已知恶意 IP 段",
+          "event": "SocketConnect",
+          "action": 1,
+          "enabled": false,
+          "matcher": {
+            "and": [
+              {"match": ["RemoteAddress", "10.0.0.*"]}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "UAC 绕过检测",
+      "description": "检测常见的 UAC 绕过技术",
+      "rules": [
+        {
+          "id": "uac_001",
+          "name": "检测 fodhelper UAC 绕过",
+          "event": "RegistrySetValue",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["RegistryPath", "*\\software\\classes\\ms-settings\\shell\\open\\command*"]}
+            ]
+          }
+        },
+        {
+          "id": "uac_002",
+          "name": "检测 computerdefaults UAC 绕过",
+          "event": "RegistrySetValue",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["RegistryPath", "*\\software\\classes\\ms-settings\\shell\\open\\command*"]}
+            ]
+          }
+        },
+        {
+          "id": "uac_003",
+          "name": "检测 sdclt UAC 绕过",
+          "event": "RegistrySetValue",
+          "action": 1,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["RegistryPath", "*\\software\\classes\\folder\\shell\\open\\command*"]}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "持久化检测",
+      "description": "检测恶意软件持久化技术",
+      "rules": [
+        {
+          "id": "persist_001",
+          "name": "检测 WMI 事件订阅持久化",
+          "event": "ProcessCreate",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*wmic*/NAMESPACE:*__EventFilter*"]}
+            ]
+          }
+        },
+        {
+          "id": "persist_002",
+          "name": "检测计划任务持久化",
+          "event": "ProcessCreate",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*schtasks*/create*"]}
+            ]
+          }
+        },
+        {
+          "id": "persist_003",
+          "name": "检测服务安装持久化",
+          "event": "ProcessCreate",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["CommandLine", "*sc*create*binaryPath*"]}
+            ]
+          }
+        },
+        {
+          "id": "persist_004",
+          "name": "检测启动文件夹写入",
+          "event": "FileCreate",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\Start Menu\\Programs\\Startup\\*.exe"]}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "数据窃取防护",
+      "description": "防止敏感数据被窃取",
+      "rules": [
+        {
+          "id": "datasteal_001",
+          "name": "监控浏览器密码文件读取",
+          "event": "FileRead",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\Login Data*"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        },
+        {
+          "id": "datasteal_002",
+          "name": "监控浏览器 Cookie 文件读取",
+          "event": "FileRead",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\Cookies*"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        },
+        {
+          "id": "datasteal_003",
+          "name": "监控钱包文件访问",
+          "event": "FileRead",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\wallet.dat*"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        },
+        {
+          "id": "datasteal_004",
+          "name": "监控 SSH 密钥读取",
+          "event": "FileRead",
+          "action": 7,
+          "enabled": true,
+          "matcher": {
+            "and": [
+              {"match": ["Path", "*\\.ssh\\id_rsa*"]},
+              {"match": ["SignCompany", ""]}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
