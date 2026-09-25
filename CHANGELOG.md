@@ -1,5 +1,53 @@
 # 更新日志
 
+## 2026-09-25 — 开源 6.1 Pro 与 6.2
+
+把本地两个此前未开源的版本补齐进仓库，并同步整理目录。
+
+### 新增源码
+
+| 仓库路径 | 内部版本 | 来源（本地路径） | 说明 |
+|----------|----------|------------------|------|
+| `src/current/6.1pro.py` | v6.1.0 | `6.1pro\main_fixed.py` | 6.1 Pro 主程序 |
+| `src/current/6.2.py` | v6.2.0 | `6.2\main.py` | 6.2 正式版主程序 |
+
+> 两个目录中的备用文件 `6.1pro\main2fix.py`（内部 v6.0.0）与 `6.2\main_fixed.py`（内部 v6.1.0）均为历史中间态，**未收录**。
+
+### 新增第三方 SDK
+
+| 仓库路径 | 内容 |
+|----------|------|
+| `sdk/6.1pro/iSDK/bin/` | iSword.dll / iSword.sys / iSword64.dll / iSword64.sys |
+| `sdk/6.2/iSDK/` | README.md + inc/ 头文件 + bin/ 二进制 |
+| `sdk/6.2/iMonitor/` | inc/ 头文件 + bin/ 二进制（含 iMonitor.rule / iMonitor.scer） |
+
+> 这些是第三方**闭源内核驱动**，随源码归档但不在本项目 MIT 许可范围内，详见 README 的《许可证》一节。
+
+### 新增打包资源
+
+| 仓库路径 | 说明 |
+|----------|------|
+| `installer/6.2.iss` | 6.2 的 Inno Setup 打包脚本 |
+| `installer/app.ico` | 安装包图标 |
+
+### 未收录的文件
+
+| 本地路径 | 原因 |
+|----------|------|
+| `6.1pro\pfx\cs.pfx`、`generatedDigital.pfx`、`cer.cer` | **代码签名私钥**，仓库 `.gitignore` 已明确严禁提交 `*.pfx` |
+| `6.2\liangdun.pfx` | 同上 |
+| `6.1pro\clamav\`、`6.2\iMonitor`（引擎部分） | ClamAV 引擎与病毒库体积过大且为 GPL v2，请从官方渠道获取 |
+| `6.1pro\Output\ld6.1prosetup.exe`、`6.2\Output\ld6.2.exe` | 构建产物，改由 GitHub Releases 分发 |
+
+### 文档订正
+
+- **下载章节** — 新增 Releases 入口，标注 6.4 为最新版
+- **版本谱系** — 补入 `6.1pro.py`（v6.1.0）与 `6.2.py`（v6.2.0）
+- **目录结构** — 补入 `sdk/`、`installer/` 两个新目录
+- **许可证** — 补充 iSwordSDK / iMonitorSDK 的第三方闭源声明
+
+---
+
 ## 2026-09-19 — 仓库结构整理
 
 对仓库做了一次结构整理：按文件类型归类到 `src/`、`data/`、`releases/`、`docs/`，补上缺失的许可证与忽略规则，并订正文档中过时的版本信息。
