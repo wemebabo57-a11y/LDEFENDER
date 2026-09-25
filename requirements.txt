@@ -1,4 +1,6 @@
-# 量盾（LiangDun）6.1 — 运行依赖
+# 量盾（LiangDun）6.1 Pro / 6.2 — 运行依赖
+#
+# 6.1 Pro 与 6.2 共用同一套依赖（同为原生 tkinter + ClamAV 引擎架构）。
 #
 # 核心依赖
 psutil>=5.9
