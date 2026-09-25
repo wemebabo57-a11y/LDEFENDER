@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/version-6.1-blue?style=flat-square" alt="Version">
+  <img src="https://img.shields.io/badge/version-6.4-blue?style=flat-square" alt="Version">
   <img src="https://img.shields.io/badge/platform-Windows%2010%2F11-lightgrey?style=flat-square" alt="Platform">
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/python-3.8%2B-yellow?style=flat-square" alt="Python">
@@ -29,17 +29,17 @@ BASE_DIR   = get_base_dir()          # 开发环境下 = Path(__file__).parent
 CLAMAV_DIR = BASE_DIR / "clamav"     # 即"脚本所在目录/clamav"
 ```
 
-也就是说，仓库中的 `src/current/6.1.py` 只是**源码存放位置**。真正部署运行时，请按下节《真实运行目录》摆放文件。
+也就是说，仓库中的 `src/current/*.py` 只是**源码存放位置**。真正部署运行时，请按下节《真实运行目录》摆放文件。
 
 ---
 
 ## 真实运行目录
 
-把 `src/current/6.1.py` 取出，放到一个独立目录中，并在同级放置 ClamAV 引擎：
+把 `src/current/` 中对应版本的主程序取出，放到一个独立目录中，并在同级放置 ClamAV 引擎：
 
 ```text
 量盾/                          ← 程序目录（位置任意，如 D:\LiangDun）
-├── 6.1.py                     ← 主程序（取自 src/current/6.1.py）
+├── 6.4.py                     ← 主程序（取自 src/current/ 中对应版本）
 └── clamav/                    ← ClamAV 引擎目录（需自行下载，本仓库不含）
     ├── clamscan.exe           ← 扫描程序
     ├── freshclam.exe          ← 病毒库更新程序
@@ -80,8 +80,10 @@ LDEFENDER/
 ├── requirements.txt                 # 当前版依赖
 │
 ├── src/                             # 源码
-│   ├── current/
-│   │   ├── 6.1.py                   # ★ 当前版本主程序
+│   ├── current/                     # 现行版本（同架构，按需取用）
+│   │   ├── 6.1.py                   # 6.1 主程序
+│   │   ├── 6.1pro.py                # 6.1 Pro 主程序（内部 v6.1.0）
+│   │   ├── 6.2.py                   # 6.2 主程序（内部 v6.2.0）
 │   │   └── clamav/README.md         # ClamAV 引擎放置说明
 │   └── legacy/                      # 历史版本源码
 │       ├── v1.py                    # 基础版（5 模块）
@@ -91,6 +93,17 @@ LDEFENDER/
 │       ├── 5.5.py
 │       ├── 6.0.py
 │       └── requirements.txt         # 历史版本依赖（CustomTkinter 时代）
+│
+├── sdk/                             # 第三方内核驱动 SDK（随源码归档）
+│   ├── 6.1pro/
+│   │   └── iSDK/bin/                # iSword 内核调用穿透 SDK
+│   └── 6.2/
+│       ├── iSDK/                    # iSword SDK（README + inc/ + bin/）
+│       └── iMonitor/                # iMonitor 系统监控 SDK（inc/ + bin/）
+│
+├── installer/                       # 打包脚本与资源
+│   ├── 6.2.iss                      # 6.2 的 Inno Setup 脚本
+│   └── app.ico                      # 安装包图标
 │
 ├── data/                            # 特征库与规则数据
 │   ├── md5-signatures/              # 旧版 MD5 特征库分片（11 片）
@@ -148,6 +161,20 @@ LDEFENDER/
 
 ---
 
+## 下载
+
+已发布的安装包见 [Releases](https://github.com/wemebabo57-a11y/LDEFENDER/releases)：
+
+| 版本 | 安装包 | 说明 |
+|------|--------|------|
+| **6.4** | `liangdun6.4setup.exe` | 最新版，含 ClamAV 引擎与病毒库 |
+| **6.3** | — | 见 Releases 页面 |
+| **6.2** | — | 源码见 [`src/current/6.2.py`](src/current/6.2.py) |
+
+> 仓库不包含 ClamAV 二进制：一是体积过大，二是 ClamAV 以 GPL v2 授权，请从官方渠道获取。
+
+---
+
 ## 快速开始
 
 ### 环境要求
@@ -158,7 +185,7 @@ LDEFENDER/
 ### 1. 安装 Python 依赖
 
 ```bash
-# 当前版本（6.1）
+# 现行版本（6.1 / 6.1 Pro / 6.2）
 pip install -r requirements.txt
 
 # 历史版本（v1 / v4 / v4_plus，CustomTkinter 时代）
@@ -178,14 +205,14 @@ pip install -r src/legacy/requirements.txt
 
 ```bash
 cd 量盾
-python 6.1.py
+python 6.2.py
 ```
 
 ### 4. 打包为 EXE
 
 ```bash
 pip install pyinstaller
-pyinstaller --onefile --windowed --name "量盾" --icon=app.ico 6.1.py
+pyinstaller --onefile --windowed --name "量盾" --icon=app.ico 6.2.py
 ```
 
 ---
@@ -202,7 +229,9 @@ pyinstaller --onefile --windowed --name "量盾" --icon=app.ico 6.1.py
 | `src/legacy/5.4-liangdun.py` | v5.2.4 | 引入 ClamAV 引擎，界面从 CustomTkinter 迁移到原生 tkinter |
 | `src/legacy/5.5.py` | — | ClamAV 自动配置、自动检测、自动更新病毒库 |
 | `src/legacy/6.0.py` | v6.0.0 | + watchdog 实时文件监控、MD5/YARA 签名库、GPU 加速检测 |
-| `src/current/6.1.py` | v6.0.0 | ★ 当前版：+ 中英文双语、YARA 规则编辑器、定时扫描、扫描历史（SQLite） |
+| `src/current/6.1.py` | v6.0.0 | + 中英文双语、YARA 规则编辑器、定时扫描、扫描历史（SQLite） |
+| `src/current/6.1pro.py` | v6.1.0 | 6.1 Pro：线程安全 UI 更新、生命周期与日志同步、GPU/YARA/哈希黑名单完善、PE 分析与自我保护 |
+| `src/current/6.2.py` | v6.2.0 | 6.2 正式版：并入 6.1 Pro 全部修复项，接入 iSword / iMonitor SDK |
 
 **技术代际分界：** `v1`/`v4`/`v4_plus` 使用 **CustomTkinter**（依赖 `customtkinter`、`pystray`、`Pillow`、`requests`）；从 `5.4` 起改为 **原生 tkinter + ClamAV 引擎**，依赖大幅减少。
 
@@ -290,7 +319,11 @@ pyinstaller --onefile --windowed --name "量盾" --icon=app.ico 6.1.py
 
 本项目采用 **MIT License**，详见 [`LICENSE`](LICENSE)。
 
-> **第三方组件说明：** 本项目调用 [ClamAV](https://www.clamav.net) 反病毒引擎（以独立可执行文件方式调用，未修改其源码）。ClamAV 版权归 © Cisco Systems, Inc. 所有，以 **GNU General Public License v2.0** 授权。相关源代码可从 <https://www.clamav.net> 获取。
+> **第三方组件说明：**
+>
+> - 本项目调用 [ClamAV](https://www.clamav.net) 反病毒引擎（以独立可执行文件方式调用，未修改其源码）。ClamAV 版权归 © Cisco Systems, Inc. 所有，以 **GNU General Public License v2.0** 授权。相关源代码可从 <https://www.clamav.net> 获取。
+> - `sdk/` 目录下的 **iSwordSDK**（`iSword.dll` / `iSword.sys`）与 **iMonitorSDK**（`iMonitor.dll` / `iMonitor.sys`）为第三方闭源内核驱动开发套件，随源码一并归档，**不在本项目 MIT 许可范围内**。其版权归各自权利人所有，使用时请自行确认授权条款。
+> - 6.2 的 `iSDK/README.md` 为该 SDK 原作者提供的说明文档，原样保留。
 
 ---
 
